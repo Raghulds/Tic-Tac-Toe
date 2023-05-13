@@ -16,6 +16,22 @@ public class Player {
         this.index = index;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public char getSymbol() {
+        return symbol;
+    }
+
+    public PlayerTypeEnum getType() {
+        return type;
+    }
+
+    public int getIndex() {
+        return index;
+    }
+
     public Move decideNextMove() {
         Scanner in = new Scanner(System.in);
         System.out.println("To which row you want to move?");

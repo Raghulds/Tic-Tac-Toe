@@ -5,6 +5,8 @@ import Enums.GameStatusEnum;
 import Enums.PlayerDifficultyEnum;
 import Exceptions.DimensionCountLowerThanPlayersCountException;
 import Exceptions.PlayersEmptyException;
+import strategies.GameWinning.GameWinningStrategy;
+import strategies.GameWinning.OrderOneGameWinningStrategy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +31,7 @@ public class Game {
     public GameStatusEnum getGameStatus() {
         return gameStatus;
     }
+    public GameWinningStrategy gameWinningStrategy;
     public Game setGameStatus(GameStatusEnum gameStatus) {
         this.gameStatus = gameStatus;
         return this;
@@ -98,7 +101,18 @@ public class Game {
         }
     }
 
+    public GameWinningStrategy getGameWinningStrategy() {
+        return gameWinningStrategy;
+    }
+
+    public void setGameWinningStrategy(GameWinningStrategy gameWinningStrategy) {
+        this.gameWinningStrategy = gameWinningStrategy;
+    }
+
     public boolean validateMove(Move move, Board board) {
+        if(move.currentCell.getRow() > this.board.getSize() - 1 || move.currentCell.getCol() > this.board.getSize() - 1) {
+            return false;
+        }
         Cell targetCell = this.board.getBoard()
                 .getCells()
                 .get(move.currentCell.getRow())
@@ -107,13 +121,18 @@ public class Game {
         return true;
     }
 
+    public void setWinner(Player winner) {
+        this.winner = winner;
+    }
+
     public Game nextMove() {
         Player currentPlayer = this.getPlayerByIndex(this.getCurrentPlayerIndex());
+        System.out.println(currentPlayer.getSymbol());
         System.out.println(currentPlayer.name + "! It's your turn.");
         Move move = currentPlayer.decideNextMove();
         if(move == null) {
             // Game drawn
-            System.out.println("No moves left! Game drawn. Re-start?");
+            System.out.println("All cells are occupied! Game drawn. Re-start?");
         }
         // Validate move
         if(validateMove(move, this.board) == false)  {
@@ -126,8 +145,18 @@ public class Game {
                 .setPlayer(currentPlayer)
                 .setSymbol(currentPlayer.symbol)
                 .setStatus(CellStatusEnum.OCCUPIED);
+        Move lastMove = new Move(currentPlayer, move.currentCell);
+        moves.add(lastMove);
+
         this.setCurrentPlayerIndex((this.getCurrentPlayerIndex() + 1) % players.size());
         // Check winner
+        if(this.gameWinningStrategy.checkWinner(board, currentPlayer, lastMove.getCurrentCell())) {
+            System.out.println("Game WON!!");
+            gameStatus = GameStatusEnum.GAME_OVER;
+            winner = currentPlayer;
+            this.setGameStatus(GameStatusEnum.GAME_OVER);
+            this.setWinner(winner);
+        }
         return this;
     }
 
@@ -188,6 +217,7 @@ public class Game {
             game.setBoard(new Board(players.size()));
             game.setGameStatus(GameStatusEnum.IN_PROGRESS);
             game.setMoves(new ArrayList<>());
+            game.setGameWinningStrategy(new OrderOneGameWinningStrategy(dimension));
             return game;
         }
     }
