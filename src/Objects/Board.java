@@ -24,6 +24,7 @@ public class Board {
     }
 
     Board(int size) {
+        this.setSize(size);
         cells = new ArrayList<>();
         for (int i=0;i<size;i++) {
             cells.add(new ArrayList<Cell>());

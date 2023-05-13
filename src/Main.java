@@ -53,5 +53,23 @@ public class Main {
             game.displayBoard();
             gameControl.nextMove(game);
         }
+
+        if(!(game.getWinner() == null) && game.getGameStatus() == GameStatusEnum.GAME_OVER) {
+            System.out.println("Winner is :" + game.getWinner().getName());
+            System.out.println("--------------------------");
+            System.out.println("Wanna restart? (y/N)");
+            String restart = in.next();
+            if(restart.equals('y')) {
+                Game newGame = gameControl.restartGame(dimension, players);
+                if(!(newGame == null)) {
+                    startNewGame();
+                }
+            }
+        }
+    }
+
+    public static void startNewGame() {
+        System.out.println("Starting a new game...");
+        main(null);
     }
 }

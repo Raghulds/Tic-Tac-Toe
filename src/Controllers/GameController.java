@@ -1,8 +1,6 @@
 package Controllers;
 
-import Objects.Cell;
 import Objects.Game;
-import Objects.Move;
 import Objects.Player;
 
 import java.util.List;
@@ -26,10 +24,11 @@ public class GameController {
         return game.nextMove();
     }
 
-    public void winningStrategy() {
-        // From the current cell, check if any symbols formed in diagonal, same row or same column
+    public Game restartGame(int dimension, List<Player> players) {
+        return Game.getGameBuilder()
+                .setDimension(dimension)
+                .setPlayers(players)
+                .build();
     }
-
-    public void restartGame() {}
 
 }
